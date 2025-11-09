@@ -6,7 +6,6 @@ from pydantic import Field, model_validator
 from src.dtos.base import BaseDTO, IDMixin, TimestampMixin
 
 
-
 class PollOptionCreateRequest(BaseDTO):
     text: str = Field(
         ...,
@@ -26,6 +25,11 @@ class PollCreateRequest(BaseDTO):
     end_date: Optional[datetime] = None
     is_active: bool = True
     is_anonymous: bool = True
+    category_id: int = Field(
+        ...,
+        gt=0,
+        description="ID категории"
+    )
     options: List[PollOptionCreateRequest] = Field(
         ...,
         min_length=2,
@@ -39,12 +43,13 @@ class PollCreateRequest(BaseDTO):
 
 
 class PollUpdateRequest(BaseDTO):
-    title: Optional[str]
-    description: Optional[str]
-    start_date: Optional[datetime]
-    end_date: Optional[datetime]
-    is_active: Optional[bool]
-    is_anonymous: Optional[bool]
+    title: Optional[str] = None
+    description: Optional[str] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    is_active: Optional[bool] = None
+    is_anonymous: Optional[bool] = None
+    category_id: Optional[int] = Field(None, gt=0)
 
     @model_validator(mode='after')
     def validate_end_date(self) -> Self:
@@ -54,12 +59,8 @@ class PollUpdateRequest(BaseDTO):
         return self
 
 
-
 class PollOptionResponse(IDMixin, TimestampMixin):
-    poll_id: int = Field(
-        ...,
-        gt=0,
-    )
+    poll_id: int = Field(..., gt=0)
     text: str
 
 
@@ -70,6 +71,10 @@ class PollResponse(IDMixin, TimestampMixin):
     end_date: Optional[datetime] = None
     is_active: bool = True
     is_anonymous: bool = True
-    options: List[PollOptionResponse] = Field(
-        default_factory=list,
-    )
+    category_id: int = Field(..., gt=0)
+    options: List[PollOptionResponse] = Field(default_factory=list)
+    #category: Optional["CategoryResponse"] = Field(None, description="Информация о категории")
+    category: Optional[dict] = Field(None, description="Информация о категории")
+
+# Для избежания циклических импортов
+#from src.dtos.category import CategoryResponse

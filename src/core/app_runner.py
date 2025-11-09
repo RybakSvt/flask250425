@@ -15,9 +15,10 @@ def init_database(app: Flask) -> None:
 
 def register_routers(app: Flask) -> None:
     from src.routers.questions import questions_bp
+    from src.routers.categories import categories_bp  # Новый импорт
 
-    app.register_blueprint(questions_bp)
-
+    app.register_blueprint(questions_bp)    # Регистрируем blueprint
+    app.register_blueprint(categories_bp)
 
 
 def create_app(app: Flask) -> None:
@@ -25,4 +26,3 @@ def create_app(app: Flask) -> None:
 
     init_database(app)
     register_routers(app)
-
